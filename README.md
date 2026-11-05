@@ -40,6 +40,23 @@ Check that it works: `curl http://localhost:3000/health` should return `{"status
 
 Use **Stellar testnet** for all development. Never commit `.env` or any secret key.
 
+## API documentation
+
+Swagger UI is served at <http://localhost:3000/docs> and the OpenAPI 3 JSON at
+<http://localhost:3000/docs-json>. The document is generated from the NestJS
+decorators at runtime, so it cannot drift from the handlers.
+
+When adding an endpoint:
+
+1. Add a response class with `@ApiProperty` for every field that is returned.
+2. Document the handler with `@ApiOperation`, `@ApiOkResponse` (and error
+   responses), and `@ApiTags`.
+3. Prefer explicit response DTOs over returning entities, especially for public
+   endpoints.
+
+`GET /health` is the reference example. Generated spec files and clients are not
+committed.
+
 ## Scripts
 
 | Command | What it does |
