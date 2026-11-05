@@ -40,6 +40,18 @@ Check that it works: `curl http://localhost:3000/health` should return `{"status
 
 Use **Stellar testnet** for all development. Never commit `.env` or any secret key.
 
+## Environment variables
+
+Configuration is loaded from `.env` and validated once at startup through
+`ConfigModule`. Invalid or missing values stop the process before it listens and
+print every problem; database passwords are never included in the message.
+
+| Name | Required | Default | Description |
+|---|---|---|---|
+| `NODE_ENV` | No | `development` | `development`, `test` or `production` |
+| `PORT` | No | `3000` | HTTP port, an integer from 1 to 65535 |
+| `DATABASE_URL` | Yes | — | Postgres URL beginning with `postgres://` or `postgresql://` |
+
 ## Scripts
 
 | Command | What it does |
