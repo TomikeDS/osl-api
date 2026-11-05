@@ -40,6 +40,37 @@ Check that it works: `curl http://localhost:3000/health` should return `{"status
 
 Use **Stellar testnet** for all development. Never commit `.env` or any secret key.
 
+## Run Postgres with Docker (optional)
+
+If you do not want to install PostgreSQL, use the included Compose setup. It
+matches `.env.example` (`postgres` / `postgres` on `localhost:5432`) and creates
+both `osl_dev` and `osl_test` on first start.
+
+```bash
+cp .env.example .env
+pnpm db:up
+pnpm migration:run
+pnpm start:dev
+```
+
+The service binds to `127.0.0.1` only. These credentials are for local
+development; never reuse them in production.
+
+```bash
+pnpm db:down    # stop, keeping the data volume
+pnpm db:reset   # remove the volume and start a clean database
+```
+
+To use a different host port, set `POSTGRES_PORT` (for example
+`POSTGRES_PORT=55432 pnpm db:up`) and update the port in `DATABASE_URL`.
+
+`docker-entrypoint-initdb.d/01-create-databases.sql` only runs when the data
+volume is empty. That is why `db:reset` is required after changing the init
+script or starting from an older volume.
+
+The manual PostgreSQL instructions above still work; Docker is only an
+alternative for local development.
+
 ## Scripts
 
 | Command | What it does |
