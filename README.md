@@ -40,17 +40,22 @@ Check that it works: `curl http://localhost:3000/health` should return `{"status
 
 Use **Stellar testnet** for all development. Never commit `.env` or any secret key.
 
-## Environment variables
+## Security and CORS
 
-Configuration is loaded from `.env` and validated once at startup through
-`ConfigModule`. Invalid or missing values stop the process before it listens and
-print every problem; database passwords are never included in the message.
+The API enables [Helmet](https://helmetjs.github.io/) defaults, including
+`X-Content-Type-Options: nosniff`. CORS is an explicit allow-list from
+`CORS_ORIGINS`, a comma-separated list of absolute `http://` or `https://`
+origins:
 
-| Name | Required | Default | Description |
-|---|---|---|---|
-| `NODE_ENV` | No | `development` | `development`, `test` or `production` |
-| `PORT` | No | `3000` | HTTP port, an integer from 1 to 65535 |
-| `DATABASE_URL` | Yes | — | Postgres URL beginning with `postgres://` or `postgresql://` |
+```dotenv
+CORS_ORIGINS=http://localhost:3001,https://app.example.com
+```
+
+Entries are trimmed, empty entries are ignored and duplicates are removed.
+Wildcards (`*`) and values with paths or credentials are rejected at startup.
+Development defaults to `http://localhost:3001` when the variable is unset. In
+production an empty list means no cross-origin access. Only `GET`, `POST` and
+`OPTIONS` are allowed; credentials and cookies are not enabled.
 
 ## Scripts
 
