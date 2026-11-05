@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from './../src/app.module.js';
+import { setupSwagger } from './../src/docs/swagger.js';
 
 // Requires a reachable Postgres at DATABASE_URL (see .env.example).
 describe('App (e2e)', () => {
@@ -14,6 +15,7 @@ describe('App (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    setupSwagger(app);
     await app.init();
   });
 
@@ -22,6 +24,26 @@ describe('App (e2e)', () => {
       .get('/health')
       .expect(200)
       .expect({ status: 'ok' });
+  });
+
+  it('/docs (GET) serves Swagger UI', () => {
+    return request(app.getHttpServer())
+      .get('/docs')
+      .expect(200)
+      .expect('Content-Type', /html/);
+  });
+
+  it('/docs-json (GET) describes /health', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/docs-json')
+      .expect(200);
+
+    expect(res.body.openapi).toMatch(/^3\./);
+    expect(res.body.info.title).toBe('Open Support Ledger API');
+    expect(res.body.paths['/health'].get.responses['200']).toBeDefined();
+    expect(
+      res.body.components.schemas.HealthResponse.properties.status,
+    ).toBeDefined();
   });
 
   afterEach(async () => {

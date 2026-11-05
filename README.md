@@ -86,6 +86,22 @@ Rules:
 - Prefer declaring column types explicitly, for example `@Column({ type: 'varchar' })`.
 - For e2e tests, use a separate database such as `osl_test` rather than your dev data.
 
+## API documentation
+
+OpenAPI documentation is generated from the code with `@nestjs/swagger`. Start the API and open:
+
+- Swagger UI: <http://localhost:3000/docs>
+- OpenAPI JSON: <http://localhost:3000/docs-json>
+
+To document a new endpoint:
+
+1. Tag the controller with `@ApiTags('name')` and describe each route with `@ApiOperation({ summary })`.
+2. Return a response **class** (not an inline type) and give each property `@ApiProperty({ type: ... })`. See `src/health/health-response.dto.ts`.
+3. Declare each response with `@ApiOkResponse({ type: YourResponse })` (or `@ApiCreatedResponse`, `@ApiNotFoundResponse`, and so on).
+4. Check the result in `/docs`. The spec is not committed; it is always generated from the code.
+
+The setup lives in `src/docs/swagger.ts` (`setupSwagger`), so tests can reuse it.
+
 ## Project structure
 
 ```
@@ -93,6 +109,7 @@ src/
   main.ts               app entrypoint
   app.module.ts         root module
   database/             TypeORM wiring, data source for the CLI, migrations/
+  docs/                 Swagger / OpenAPI setup
   health/               health check endpoint
 test/                   end-to-end tests
 ```
